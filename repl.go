@@ -7,8 +7,6 @@ import (
 	"strings"
 )
 
-var commands map[string]cliCommand
-
 type cliCommand struct {
 	name        string
 	description string
@@ -53,6 +51,16 @@ func knownCommands() map[string]cliCommand {
 			name:        "help",
 			description: "Displays a help message",
 			callback:    commandHelp,
+		},
+		"map": {
+			name:        "map",
+			description: "Displays names of 20 location areas",
+			callback:    commandMap,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Displays names of the previous 20 location areas",
+			callback:    commandMapb,
 		},
 	}
 }
