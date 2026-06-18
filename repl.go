@@ -5,15 +5,23 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/jverbit/pokedexcli/internal/pokeapi"
 )
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(*config) error
 }
 
-func loopRepl() {
+type config struct {
+	pokeapiClient    pokeapi.Client
+	nextLocationsURL *string
+	prevLocationsURL *string
+}
+
+func loopRepl(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
@@ -25,7 +33,7 @@ func loopRepl() {
 			}
 
 			if command, exists := knownCommands()[input]; exists {
-				command.callback()
+				command.callback(cfg)
 			} else {
 				fmt.Println("Unknown command")
 				continue
@@ -55,7 +63,7 @@ func knownCommands() map[string]cliCommand {
 		"map": {
 			name:        "map",
 			description: "Displays names of 20 location areas",
-			callback:    commandMap,
+			callback:    commandMapf,
 		},
 		"mapb": {
 			name:        "mapb",

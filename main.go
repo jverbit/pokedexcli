@@ -1,5 +1,16 @@
 package main
 
+import (
+	"time"
+
+	"github.com/jverbit/pokedexcli/internal/pokeapi"
+)
+
 func main() {
-	loopRepl()
+	pokeClient := pokeapi.NewClient(5 * time.Second)
+	cfg := &config{
+		pokeapiClient: pokeClient,
+	}
+
+	loopRepl(cfg)
 }
