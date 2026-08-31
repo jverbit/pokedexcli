@@ -16,18 +16,14 @@ type cacheEntry struct {
 	val       []byte
 }
 
-func NewCache() *Cache {
-	return &Cache{
+func AppCache() *Cache {
+	c := &Cache{
 		mu:         &sync.RWMutex{},
 		cached:     make(map[string]cacheEntry),
 		defaultTTL: 5 * time.Second,
 	}
-}
 
-func AppCache() *Cache {
-	c := NewCache()
-
-	go c.reapLoop(c.defaultTTL)
+	go c.reapLoop(5 * time.Second)
 
 	return c
 }
