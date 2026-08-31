@@ -4,10 +4,17 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+
+	"github.com/jverbit/pokedexcli/internal/pokecache"
 )
 
 func (c *Client) ListLocations(pageURL *string) (RespShallowLocations, error) {
-	value, ok := pokecache.cache().Get(*pageURL)
+	url := baseURL + "/location-area"
+	if pageURL != nil {
+		url = *pageURL
+	}
+
+	value, ok := c.cache.Get(url)
 
 	if ok {
 		var locationsResp RespShallowLocations
@@ -17,11 +24,6 @@ func (c *Client) ListLocations(pageURL *string) (RespShallowLocations, error) {
 		}
 		return locationsResp, nil
 	} else {
-
-		url := baseURL + "/location-area"
-		if pageURL != nil {
-			url = *pageURL
-		}
 
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
@@ -39,7 +41,7 @@ func (c *Client) ListLocations(pageURL *string) (RespShallowLocations, error) {
 			return RespShallowLocations{}, err
 		}
 
-		pokecache.cache().Add(*pageURL, dat)
+		pokecache.AppCache().Add(url, dat)
 		locationsResp := RespShallowLocations{}
 		err = json.Unmarshal(dat, &locationsResp)
 		if err != nil {

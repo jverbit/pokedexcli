@@ -6,7 +6,7 @@ import (
 )
 
 type Cache struct {
-	mu         sync.RWMutex
+	mu         *sync.RWMutex
 	cached     map[string]cacheEntry
 	defaultTTL time.Duration
 }
@@ -16,13 +16,18 @@ type cacheEntry struct {
 	val       []byte
 }
 
-func cache() *Cache {
-	c := &Cache{
+func NewCache() *Cache {
+	return &Cache{
+		mu:         &sync.RWMutex{},
 		cached:     make(map[string]cacheEntry),
-		defaultTTL: 5,
+		defaultTTL: 5 * time.Second,
 	}
+}
 
-	go c.reapLoop(5)
+func AppCache() *Cache {
+	c := NewCache()
+
+	go c.reapLoop(c.defaultTTL)
 
 	return c
 }
