@@ -16,7 +16,7 @@ type cacheEntry struct {
 	val       []byte
 }
 
-func NewCache() *Cache {
+func cache() *Cache {
 	c := &Cache{
 		cached:     make(map[string]cacheEntry),
 		defaultTTL: 5,

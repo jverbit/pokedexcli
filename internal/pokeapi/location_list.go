@@ -7,32 +7,45 @@ import (
 )
 
 func (c *Client) ListLocations(pageURL *string) (RespShallowLocations, error) {
-	url := baseURL + "/location-area"
-	if pageURL != nil {
-		url = *pageURL
-	}
+	value, ok := pokecache.cache().Get(*pageURL)
 
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return RespShallowLocations{}, err
-	}
+	if ok {
+		var locationsResp RespShallowLocations
+		err := json.Unmarshal(value, &locationsResp)
+		if err != nil {
+			return RespShallowLocations{}, err
+		}
+		return locationsResp, nil
+	} else {
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return RespShallowLocations{}, err
-	}
-	defer resp.Body.Close()
+		url := baseURL + "/location-area"
+		if pageURL != nil {
+			url = *pageURL
+		}
 
-	dat, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return RespShallowLocations{}, err
-	}
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return RespShallowLocations{}, err
+		}
 
-	locationsResp := RespShallowLocations{}
-	err = json.Unmarshal(dat, &locationsResp)
-	if err != nil {
-		return RespShallowLocations{}, err
-	}
+		resp, err := c.httpClient.Do(req)
+		if err != nil {
+			return RespShallowLocations{}, err
+		}
+		defer resp.Body.Close()
 
-	return locationsResp, nil
+		dat, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return RespShallowLocations{}, err
+		}
+
+		pokecache.cache().Add(*pageURL, dat)
+		locationsResp := RespShallowLocations{}
+		err = json.Unmarshal(dat, &locationsResp)
+		if err != nil {
+			return RespShallowLocations{}, err
+		}
+
+		return locationsResp, nil
+	}
 }
