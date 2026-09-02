@@ -10,8 +10,8 @@ func commandExplore(cfg *config, args ...string) error {
 		return err
 	}
 
-	for _, pokemon := range locationMap.Pokemon_encounters {
-		fmt.Println("-", pokemon.Pokemon)
+	for _, encounter := range locationMap.Pokemon_encounters {
+		fmt.Println("-", encounter.Pokemon.Name)
 	}
 
 	return nil
