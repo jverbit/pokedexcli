@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/jverbit/pokedexcli/internal/pokeapi"
 )
@@ -12,7 +11,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(cfg *config, args ...string) error
 }
 
 type config struct {
@@ -28,13 +27,17 @@ func loopRepl(cfg *config) {
 	for {
 		fmt.Print("Pokedex > ")
 		if scanner.Scan() {
-			input := strings.Join(cleanInput(scanner.Text()), " ")
+			input := cleanInput(scanner.Text())
 			if len(input) == 0 {
 				continue
 			}
 
-			if command, exists := knownCommands()[input]; exists {
-				command.callback(cfg)
+			if command, exists := knownCommands()[input[0]]; exists {
+				if len(input[1:]) == 0 && input[0] == "explore" {
+					fmt.Println("Explore command needs a location")
+					continue
+				}
+				command.callback(cfg, input[1:]...)
 			} else {
 				fmt.Println("Unknown command")
 				continue
@@ -70,6 +73,11 @@ func knownCommands() map[string]cliCommand {
 			name:        "mapb",
 			description: "Displays names of the previous 20 location areas",
 			callback:    commandMapb,
+		},
+		"explore": {
+			name:        "explore [location-area-here]",
+			description: "Lists all of the Pokemon in a location area",
+			callback:    commandExplore,
 		},
 	}
 }

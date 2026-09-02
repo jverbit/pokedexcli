@@ -9,15 +9,13 @@ import (
 )
 
 func (c *Client) ListLocations(pageURL *string) (RespShallowLocations, error) {
-	url := baseURL + "/location-area"
+	url := baseURL + locationAreaEndpoint
 	if pageURL != nil {
 		url = *pageURL
 	}
 
-	value, ok := c.cache.Get(url)
-
-	if ok {
-		var locationsResp RespShallowLocations
+	if value, ok := c.cache.Get(url); ok {
+		locationsResp := RespShallowLocations{}
 		err := json.Unmarshal(value, &locationsResp)
 		if err != nil {
 			return RespShallowLocations{}, err

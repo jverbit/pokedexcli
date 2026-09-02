@@ -20,10 +20,10 @@ func AppCache() *Cache {
 	c := &Cache{
 		mu:         &sync.RWMutex{},
 		cached:     make(map[string]cacheEntry),
-		defaultTTL: 5 * time.Second,
+		defaultTTL: 5 * time.Minute,
 	}
 
-	go c.reapLoop(5 * time.Second)
+	go c.reapLoop(5 * time.Minute)
 
 	return c
 }
