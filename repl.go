@@ -19,6 +19,7 @@ type config struct {
 	pokeapiClient    pokeapi.Client
 	nextLocationsURL *string
 	prevLocationsURL *string
+	pokedex          map[string]pokeapi.PokemonStats
 }
 
 func loopRepl(cfg *config) {
@@ -35,6 +36,10 @@ func loopRepl(cfg *config) {
 			if command, exists := knownCommands()[input[0]]; exists {
 				if len(input[1:]) == 0 && input[0] == "explore" {
 					fmt.Println("Explore command needs a location")
+					continue
+				}
+				if len(input[1:]) == 0 && input[0] == "catch" {
+					fmt.Println("Catch command needs a target")
 					continue
 				}
 				command.callback(cfg, input[1:]...)
@@ -75,9 +80,14 @@ func knownCommands() map[string]cliCommand {
 			callback:    commandMapb,
 		},
 		"explore": {
-			name:        "explore [location-area-here]",
+			name:        "explore [location-area]",
 			description: "Lists all of the Pokemon in a location area",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch [pokemon]",
+			description: "Attempts to catch a Pokemon",
+			callback:    commandCatch,
 		},
 	}
 }

@@ -7,3 +7,7 @@ const (
 const (
 	locationAreaEndpoint = "/location-area"
 )
+
+const (
+	pokemondata = "/pokemon"
+)
