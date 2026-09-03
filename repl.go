@@ -42,6 +42,10 @@ func loopRepl(cfg *config) {
 					fmt.Println("Catch command needs a target")
 					continue
 				}
+				if len(input[1:]) == 0 && input[0] == "inspect" {
+					fmt.Println("Specify a Pokemon to inspect")
+					continue
+				}
 				command.callback(cfg, input[1:]...)
 			} else {
 				fmt.Println("Unknown command")
@@ -88,6 +92,11 @@ func knownCommands() map[string]cliCommand {
 			name:        "catch [pokemon]",
 			description: "Attempts to catch a Pokemon",
 			callback:    commandCatch,
+		},
+		"inspect": {
+			name:        "insepct [pokemon]",
+			description: "Displays stats of caught Pokemon",
+			callback:    commandInspect,
 		},
 	}
 }
